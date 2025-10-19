@@ -18,7 +18,7 @@ from django.conf import settings
 from django.shortcuts import render
 from django.views.generic import RedirectView
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 def test_404(request, exception):
     return render(request, '404.html', status=404)
@@ -27,4 +27,6 @@ handler404 = test_404
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('contracts.urls')),
+    path('accounts/', include('accounts.urls')),
 ]

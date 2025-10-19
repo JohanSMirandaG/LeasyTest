@@ -16,7 +16,6 @@ WORKDIR /app
 # Copia los archivos de dependencias primero (para aprovechar la caché)
 COPY requirements.txt .
 
-# Instala las dependencias, incluido uWSGI
 # Instala dependencias del sistema y Python (incluye uWSGI)
 RUN apt-get update && \
     apt-get install -y build-essential && \
@@ -34,8 +33,7 @@ RUN python manage.py collectstatic --noinput
 # Expone el puerto 8000
 EXPOSE 8000
 
-
-# Comando de inicio con uWSGI
-CMD ["uwsgi", "--ini", "uwsgi.ini"]
-# Comando por defecto para correr el servidor de desarrollo
-#CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# =====================================
+# Ejecuta migraciones automáticas y luego uWSGI
+# =====================================
+CMD ["bash", "-c", "python manage.py makemigrations && python manage.py migrate && uwsgi --ini uwsgi.ini"]
