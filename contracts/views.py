@@ -1,9 +1,10 @@
 import io
 from django.views.generic import ListView
 from django.db.models import Q
+from cars.models import Car
 from .models import Contract
 from django.contrib.auth.mixins import LoginRequiredMixin
-from datetime import datetime, timedelta
+from datetime import datetime
 from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import render, redirect
@@ -11,7 +12,7 @@ from django.views import View
 import pandas as pd
 from .forms import UploadFileForm
 from clients.models import Client
-from cars.models import Car
+import pytz
 
 class DashboardView(LoginRequiredMixin, ListView):
     template_name = "contracts/dashboard.html"
@@ -118,6 +119,7 @@ class ContractUploadView(LoginRequiredMixin, View):
         # --- Procesar datos ---
         created_clients = created_cars = created_contracts = 0
         updated_contracts = 0
+        bogota_tz = pytz.timezone("America/Bogota")
 
         try:
             with transaction.atomic():
@@ -148,19 +150,29 @@ class ContractUploadView(LoginRequiredMixin, View):
                         defaults={
                             "first_name": first_name,
                             "last_name": last_name,
-                            "registration_date": datetime.now().date(),
+                            "registration_date": datetime.now(bogota_tz).date(),
                         },
                     )
                     if client_created:
                         created_clients += 1
+                    else:
+                        updated = False
+                        if first_name and client_obj.first_name != first_name:
+                            client_obj.first_name = first_name
+                            updated = True
+                        if last_name and client_obj.last_name != last_name:
+                            client_obj.last_name = last_name
+                            updated = True
+                        if updated:
+                            client_obj.save()
 
-                    # Auto
+                    # --- Auto ---
                     car_obj, car_created = Car.objects.get_or_create(
                         plate=plate,
                         defaults={
                             "brand": brand,
                             "model": model,
-                            "fabrication_date": datetime.now().date(),
+                            "fabrication_date": datetime.now(bogota_tz).date(),
                         },
                     )
                     if car_created:
