@@ -2,7 +2,13 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Contratos</h2>
+<!-- Encabezado con botón de carga -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">Contratos</h2>
+  <a href="{% url 'contracts_upload' %}" class="btn btn-outline-primary">
+    📤 Cargar archivo
+  </a>
+</div>
 
 <form method="get" class="mb-4">
     <div class="input-group">
@@ -22,6 +28,8 @@
                 <th>Valor semanal</th>
                 <th>Semanas</th>
                 <th>Fecha inicio</th>
+                <th>Creado</th>
+                <th>Modificado</th>
             </tr>
         </thead>
         <tbody>
@@ -34,33 +42,47 @@
                     <td>${{ contract.weekly_amount }}</td>
                     <td>{{ contract.weeks }}</td>
                     <td>{{ contract.start_date }}</td>
+                    <td>{{ contract.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>{{ contract.updated_at|date:"Y-m-d H:i" }}</td>
                 </tr>
             {% empty %}
-                <tr><td colspan="7" class="text-center text-muted">No hay contratos registrados.</td></tr>
+                <tr><td colspan="9" class="text-center text-muted">No hay contratos registrados.</td></tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 
 <nav aria-label="Page navigation">
-    <ul class="pagination justify-content-center">
-        {% if contracts.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?q={{ request.GET.q }}&page={{ contracts.previous_page_number }}">Anterior</a>
-            </li>
-        {% else %}
-            <li class="page-item disabled"><span class="page-link">Anterior</span></li>
-        {% endif %}
+  {% if is_paginated %}
+    <ul class="pagination justify-content-center mt-4">
+      {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?q={{ request.GET.q }}&page={{ page_obj.previous_page_number }}">Anterior</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+      {% endif %}
 
-        <li class="page-item disabled"><span class="page-link">Página {{ contracts.number }} de {{ contracts.paginator.num_pages }}</span></li>
-
-        {% if contracts.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?q={{ request.GET.q }}&page={{ contracts.next_page_number }}">Siguiente</a>
-            </li>
-        {% else %}
-            <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <li class="page-item active">
+            <span class="page-link">{{ num }}</span>
+          </li>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <li class="page-item">
+            <a class="page-link" href="?q={{ request.GET.q }}&page={{ num }}">{{ num }}</a>
+          </li>
         {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?q={{ request.GET.q }}&page={{ page_obj.next_page_number }}">Siguiente</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+      {% endif %}
     </ul>
+  {% endif %}
 </nav>
 {% endblock %}

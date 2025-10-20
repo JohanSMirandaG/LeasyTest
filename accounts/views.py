@@ -1,9 +1,10 @@
+from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.decorators import user_passes_test
-from django.utils.decorators import method_decorator
+from django.shortcuts import redirect
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
-from .forms import CreateUserForm
+from .forms import CustomUserCreationForm
 from django.contrib import messages
 
 class CustomLoginView(LoginView):
@@ -12,15 +13,21 @@ class CustomLoginView(LoginView):
 class CustomLogoutView(LogoutView):
     next_page = "login"
 
-def admin_required(user):
-    return user.is_superuser or user.is_staff
+User = get_user_model()
 
-@method_decorator(user_passes_test(admin_required), name='dispatch')
-class UserCreateView(CreateView):
-    form_class = CreateUserForm
+class UserCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = User
+    form_class = CustomUserCreationForm
     template_name = "accounts/create_user.html"
     success_url = reverse_lazy("dashboard")
 
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def handle_no_permission(self):
+        messages.error(self.request, "No tienes permiso para crear usuarios.")
+        return redirect("dashboard")
+
     def form_valid(self, form):
-        messages.success(self.request, "Usuario creado exitosamente ✅")
+        messages.success(self.request, f"Usuario '{form.cleaned_data['email']}' creado exitosamente.")
         return super().form_valid(form)

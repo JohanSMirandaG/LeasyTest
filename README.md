@@ -107,12 +107,23 @@ DASHBOARD
 - Consultas optimizadas con select_related para mejorar rendimiento.
 
 -------------------------------------------------
-CARGA DE ARCHIVOS (OPCIONAL / PENDIENTE)
+CARGA DE ARCHIVOS
 -------------------------------------------------
-- Admite carga de archivos Excel (.xlsx) o CSV.
-- Valida columnas requeridas (cliente, auto, monto, fecha).
-- Inserta registros en las tablas Client, Car, Contract e Invoice.
-- Muestra mensajes de éxito o error según el resultado.
+- Permite la carga de archivos **Excel (.xlsx)** o **CSV** con información de contratos.
+- Valida que el archivo contenga las columnas requeridas:
+    - `Nombre`
+    - `Apellidos`
+    - `Número de documento`
+    - `Inicio de contrato`
+    - `Cuota semanal`
+    - `Marca del auto`
+    - `Modelo del auto`
+    - `Placa del auto`
+- Durante el proceso de carga:
+  - Se valida el formato del archivo y las columnas esperadas.
+  - Se evita la duplicidad de información para contratos activos antes de insertar los datos (Si llega un nuevo contrato, el actual pasa a inactivo y se crea uno nuevo).
+- En caso exitoso, se muestra un mensaje de confirmación con el total de registros insertados.
+- Los errores y resultados del proceso se pueden visualizar desde la interfaz.
 
 -------------------------------------------------
 BUENAS PRÁCTICAS IMPLEMENTADAS

@@ -1,33 +1,49 @@
 {% extends 'base.html' %}
-{% load widget_tweaks %}
-{% block title %}Crear Usuario{% endblock %}
+{% block title %}Crear nuevo usuario{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center mt-5">
-    <div class="col-md-5">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h4 class="mb-4 text-center">Crear nuevo usuario</h4>
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Crear nuevo usuario</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
 
-                <form method="post">
-                    {% csrf_token %}
-                    {{ form.non_field_errors }}
-                    <div class="mb-3">
-                        <label class="form-label">Correo electrónico</label>
-                        {{ form.email|add_class:"form-control" }}
+                {# Errores generales (como contraseñas no coinciden) #}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
                     </div>
+                {% endif %}
+
+                {# Campos del formulario #}
+                {% for field in form %}
                     <div class="mb-3">
-                        <label class="form-label">Contraseña</label>
-                        {{ form.password1|add_class:"form-control" }}
+                        <label {% if field.id_for_label %}for="{{ field.id_for_label }}"{% endif %} class="form-label">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <ul class="list-unstyled mb-0">
+                                {% for error in field.errors %}
+                                    {% if "This field is required" not in error %}
+                                        <li class="text-danger small mt-1">{{ error }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Confirmar contraseña</label>
-                        {{ form.password2|add_class:"form-control" }}
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Crear usuario</button>
-                    <a href="{% url 'dashboard' %}" class="btn btn-secondary w-100 mt-2">Volver</a>
-                </form>
-            </div>
+                {% endfor %}
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Crear usuario</button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
