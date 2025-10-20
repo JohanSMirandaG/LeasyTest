@@ -56,7 +56,7 @@ INSTALACIÓN Y EJECUCIÓN CON DOCKER
 1. Clonar el repositorio:
    git clone https://github.com/JohanSMirandaG/LeasyTest.git
 
-   cd leasy-test
+   cd LeasyTest
 
 
 2. Crear un archivo .env en la raíz del proyecto con el siguiente contenido:
