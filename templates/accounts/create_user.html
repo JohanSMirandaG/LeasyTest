@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Crear nuevo usuario{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Crear nuevo usuario</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {# Errores generales (como contraseñas no coinciden) #}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {# Campos del formulario #}
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label {% if field.id_for_label %}for="{{ field.id_for_label }}"{% endif %} class="form-label">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <ul class="list-unstyled mb-0">
+                                {% for error in field.errors %}
+                                    {% if "This field is required" not in error %}
+                                        <li class="text-danger small mt-1">{{ error }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Crear usuario</button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

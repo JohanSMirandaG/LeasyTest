@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Upload Data{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h4 class="card-title mb-3">Upload CSV / Excel</h4>
+
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
+            {{ form.file }}
+          </div>
+          <button type="submit" class="btn btn-primary">Upload</button>
+          <a href="{% url 'dashboard' %}" class="btn btn-secondary ms-2">Cancel</a>
+        </form>
+
+        <hr>
+
+        <p class="text-muted small mt-3">
+          Expected columns:
+          <strong>Nombres, Apellidos, Número de documento, Inicio de contrato, Cuota semanal, Marca del auto, Modelo del auto, Placa del auto</strong>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for validation errors -->
+{% if validation_errors %}
+<div class="alert alert-danger mt-4">
+    <h5>Validation errors found</h5>
+    <p>Some rows contain missing or invalid required fields. Please correct and re-upload.</p>
+
+    <ul class="list-group mt-3">
+        {% for err in validation_errors %}
+        <li class="list-group-item">
+            <strong>Row {{ err.row }}:</strong>
+            {% if err.missing %}
+                Missing: {{ err.missing|join:", " }}
+            {% endif %}
+            {% if err.row_data %}
+                <br>
+                <small class="text-muted">
+                    Row data:
+                    <pre class="bg-light p-2 rounded small mb-0">{{ err.row_data|safe }}</pre>
+                </small>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+{% endblock %}
