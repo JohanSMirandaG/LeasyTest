@@ -13,6 +13,9 @@ import pandas as pd
 from .forms import UploadFileForm
 from clients.models import Client
 import pytz
+from django.http import HttpResponse
+from openpyxl import Workbook
+from openpyxl.utils import get_column_letter
 
 class DashboardView(LoginRequiredMixin, ListView):
     template_name = "contracts/dashboard.html"
@@ -214,3 +217,51 @@ class ContractUploadView(LoginRequiredMixin, View):
             f"{created_contracts} contratos creados, {updated_contracts} contratos actualizados/inactivados."
         )
         return redirect("dashboard")
+
+class ContractReportView(LoginRequiredMixin, View):
+    def post(self, request):
+        selected_fields = request.POST.getlist("fields")
+        status_filter = request.POST.get("status", "active")
+
+        if not selected_fields:
+            messages.error(request, "Debe seleccionar al menos una columna para generar el reporte.")
+            return redirect("dashboard")
+
+        contracts = Contract.objects.select_related("client", "car").order_by("id")
+
+        if status_filter == "active":
+            contracts = contracts.filter(is_active=True)
+        elif status_filter == "inactive":
+            contracts = contracts.filter(is_active=False)
+
+        field_mapping = {
+            "id": ("ID", lambda c: c.id),
+            "client_name": ("Cliente", lambda c: f"{c.client.first_name} {c.client.last_name}"),
+            "document": ("Documento", lambda  c: c.client.document_number),
+            "car": ("Auto", lambda c: f"{c.car.plate} - {c.car.brand} {c.car.model}"),
+            "weekly_amount": ("Valor semanal", lambda c: float(c.weekly_amount)),
+            "weeks": ("Semanas", lambda c: c.weeks),
+            "start_date": ("Fecha inicio", lambda c: c.start_date.strftime("%Y-%m-%d")),
+            "created_at": ("Creado", lambda c: c.created_at.strftime("%Y-%m-%d %H:%M")),
+            "updated_at": ("Actualizado", lambda c: c.updated_at.strftime("%Y-%m-%d %H:%M")),
+        }
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Contratos"
+
+        headers = [field_mapping[f][0] for f in selected_fields]
+        ws.append(headers)
+
+        for contract in contracts:
+            row = [field_mapping[f][1](contract) for f in selected_fields]
+            ws.append(row)
+
+        for i, _ in enumerate(headers,1):
+            ws.column_dimensions[get_column_letter(i)].width = 20
+
+        response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        report_name = f"contracts_report_{status_filter}_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx"
+        response["Content-Disposition"] = f'attachment; filename="{report_name}"'
+        wb.save(response)
+        return response

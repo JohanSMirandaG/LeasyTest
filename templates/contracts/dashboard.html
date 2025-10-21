@@ -10,6 +10,7 @@
   </a>
 </div>
 
+<!-- buscador -->
 <form method="get" class="mb-4">
     <div class="input-group">
         <input type="text" name="q" class="form-control" placeholder="Buscar por nombre, documento o placa..." value="{{ request.GET.q }}">
@@ -17,6 +18,80 @@
     </div>
 </form>
 
+<!-- formulario para generar el reporte -->
+
+<form method="post" action="{% url 'contracts_report' %}" class="mb-5">
+  {% csrf_token %}
+  <div class="card p-3">
+    <h5 class="mb-3">📊 Generar reporte personalizado</h5>
+
+    <div class="row mb-3">
+      <div class="col-md-12 d-flex flex-wrap">
+        <div class="form-check me-3">
+          <input class="form-check-input" type="checkbox" name="fields" value="id" id="field_id" checked>
+          <label class="form-check-label" for="field_id">ID</label>
+        </div>
+        <div class="form-check me-3">
+          <input class="form-check-input" type="checkbox" name="fields" value="client_name" id="field_client" checked>
+          <label class="form-check-label" for="field_client">Cliente</label>
+        </div>
+        <div class="form-check me-3">
+          <input class="form-check-input" type="checkbox" name="fields" value="document" id="field_document" checked>
+          <label class="form-check-label" for="field_document">Documento</label>
+        </div>
+        <div class="form-check me-3">
+          <input class="form-check-input" type="checkbox" name="fields" value="car" id="field_car" checked>
+          <label class="form-check-label" for="field_car">Auto</label>
+        </div>
+        <div class="form-check me-3">
+          <input class="form-check-input" type="checkbox" name="fields" value="weekly_amount" id="field_amount" checked>
+          <label class="form-check-label" for="field_amount">Valor semanal</label>
+        </div>
+        <div class="form-check me-3">
+          <input class="form-check-input" type="checkbox" name="fields" value="weeks" id="field_weeks">
+          <label class="form-check-label" for="field_weeks">Semanas</label>
+        </div>
+        <div class="form-check me-3">
+          <input class="form-check-input" type="checkbox" name="fields" value="start_date" id="field_start">
+          <label class="form-check-label" for="field_start">Fecha inicio</label>
+        </div>
+        <div class="form-check me-3">
+          <input class="form-check-input" type="checkbox" name="fields" value="created_at" id="field_created">
+          <label class="form-check-label" for="field_created">Creado</label>
+        </div>
+        <div class="form-check me-3">
+          <input class="form-check-input" type="checkbox" name="fields" value="updated_at" id="field_updated">
+          <label class="form-check-label" for="field_updated">Modificado</label>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- Filtro de estado -->
+    <div class="mb-3">
+      <label class="form-label fw-bold">Estado de los contratos:</label>
+      <div class="d-flex flex-wrap">
+        <div class="form-check me-4">
+          <input class="form-check-input" type="radio" name="status" id="status_active" value="active" checked>
+          <label class="form-check-label" for="status_active">Solo activos</label>
+        </div>
+        <div class="form-check me-4">
+          <input class="form-check-input" type="radio" name="status" id="status_inactive" value="inactive">
+          <label class="form-check-label" for="status_inactive">Solo inactivos</label>
+        </div>
+        <div class="form-check me-4">
+          <input class="form-check-input" type="radio" name="status" id="status_all" value="all">
+          <label class="form-check-label" for="status_all">Todos</label>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-success mt-2">📈 Generar Reporte Excel</button>
+  </div>
+</form>
+
+<!-- Tabla de contratos -->
 <div class="table-responsive">
     <table class="table table-striped table-hover align-middle">
         <thead class="table-dark">

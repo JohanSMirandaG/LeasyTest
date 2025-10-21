@@ -125,6 +125,75 @@ CARGA DE ARCHIVOS
 - En caso exitoso, se muestra un mensaje de confirmación con el total de registros insertados.
 - Los errores y resultados del proceso se pueden visualizar desde la interfaz.
 
+
+-------------------------------------------------
+GENERACIÓN DE REPORTES
+-------------------------------------------------
+
+- Permite generar reportes personalizados en formato **Excel (.xlsx)** desde el dashboard de contratos.
+- El usuario puede seleccionar dinámicamente las columnas que desea incluir en el reporte mediante **checkboxes**:
+    - `ID`
+    - `Cliente`
+    - `Documento`
+    - `Auto`
+    - `Valor semanal`
+    - `Semanas`
+    - `Fecha inicio`
+    - `Creado`
+    - `Actualizado`
+
+
+- También se incluye un **filtro de estado** con opciones:
+    - `Activos` (contratos con is_active=True)
+    - `Inactivos` (contratos con is_active=False)
+    - `Todos` (sin filtro)
+- Al generar el reporte:
+  - Se construye un archivo Excel con las columnas seleccionadas.
+  - Los datos se ordenan por ID de contrato.
+  - Las columnas se ajustan automáticamente al contenido para mejor visualización.
+
+
+- El archivo generado se descarga automáticamente con un nombre que incluye el tipo de reporte y la fecha de generación, por ejemplo:
+`contracts_report_active_20251021_1258.xlsx`
+- En caso de no seleccionar ninguna columna, se mostrará un mensaje de error solicitando elegir al menos una.
+- Los reportes pueden incluir información combinada de:
+- **Clientes:** nombre, apellido y documento.
+- **Autos:** placa, marca y modelo.
+- **Contratos:** monto semanal, semanas, fechas de inicio, creación y modificación.
+-------------------------------------------------
+CARGA DE ARCHIVOS
+-------------------------------------------------
+
+- Permite generar reportes personalizados en formato **Excel (.xlsx)** desde el dashboard de contratos.
+- El usuario puede seleccionar dinámicamente las columnas que desea incluir en el reporte mediante **checkboxes**:
+    - `ID`
+    - `Cliente`
+    - `Documento`
+    - `Auto`
+    - `Valor semanal`
+    - `Semanas`
+    - `Fecha inicio`
+    - `Creado`
+    - `Actualizado`
+
+
+- También se incluye un **filtro de estado** con opciones:
+    - `Activos` (contratos con is_active=True)
+    - `Inactivos` (contratos con is_active=False)
+    - `Todos` (sin filtro)
+- Al generar el reporte:
+  - Se construye un archivo Excel con las columnas seleccionadas.
+  - Los datos se ordenan por ID de contrato.
+  - Las columnas se ajustan automáticamente al contenido para mejor visualización.
+
+
+- El archivo generado se descarga automáticamente con un nombre que incluye el tipo de reporte y la fecha de generación, por ejemplo:
+`contracts_report_active_20251021_1258.xlsx`
+- En caso de no seleccionar ninguna columna, se mostrará un mensaje de error solicitando elegir al menos una.
+- Los reportes pueden incluir información combinada de:
+- **Clientes:** nombre, apellido y documento.
+- **Autos:** placa, marca y modelo.
+- **Contratos:** monto semanal, semanas, fechas de inicio, creación y modificación.
 -------------------------------------------------
 BUENAS PRÁCTICAS IMPLEMENTADAS
 -------------------------------------------------
